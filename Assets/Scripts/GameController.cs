@@ -48,104 +48,157 @@ namespace Topology {
 			statusText.text = "Loading file: " + sourceFile;
 
 			//determine which platform to load for
-			string xml = null;
-			if(Application.isWebPlayer){
-				WWW www = new WWW (sourceFile);
-				yield return www;
-				xml = www.text;
-			}
-			else{
-				StreamReader sr = new StreamReader(sourceFile);
-				xml = sr.ReadToEnd();
-				sr.Close();
-			}
+//			string xml = null;
+//			if(Application.isWebPlayer){
+//				WWW www = new WWW (sourceFile);
+//				yield return www;
+//				xml = www.text;
+//			}
+//			else{
+//				StreamReader sr = new StreamReader(sourceFile);
+//				xml = sr.ReadToEnd();
+//				sr.Close();
+//			}
 
-			XmlDocument xmlDoc = new XmlDocument();
-			xmlDoc.LoadXml(xml);
+			XmlReader xmlReader = XmlReader.Create (new StreamReader (sourceFile));
+//
+//			XmlDocument xmlDoc = new XmlDocument();
+//			xmlDoc.LoadXml(xml);
 
 			statusText.text = "Loading Topology";
+			int j = 0;
 
+			while(xmlReader.Read()){
+				if(xmlReader.Name == "circle"){
 
-			XmlElement root = xmlDoc.FirstChild as XmlElement;
-			int nodeid = 0;
-			int lineid = 0;
-			for(int i=0; i<root.ChildNodes.Count; i++){
-				XmlElement xmlGraph = root.ChildNodes[i] as XmlElement;
+					Node nodeObject = parseNode(xmlReader);
 
-				for(int j=0; j<xmlGraph.ChildNodes.Count; j++){
-					XmlElement xmlNode = xmlGraph.ChildNodes[j] as XmlElement;
+					nodes.Add(nodeObject.id, nodeObject);
+					
+					statusText.text = "Loading Topology: Node " + nodeObject.id;
+					nodeCountText.text = "Nodes: " + nodeCount;
+				}else if(xmlReader.Name == "line"){
 
-					if(xmlNode.Name == "circle"){
-						float x1 = float.Parse(xmlNode.Attributes["cx"].Value);
-						float y1 = float.Parse (xmlNode.Attributes["cy"].Value);
-						float z1 = 0;
-						float radius = float.Parse (xmlNode.Attributes["r"].Value);
+					Link linkObject = parseLink(xmlReader);
 
-						string color = xmlNode.Attributes["fill"].Value;
-						MatchCollection matches = Regex.Matches(color, colorrx, 
-						                                        RegexOptions.IgnorePatternWhitespace);
-						float r = float.Parse(matches[0].Groups[1].Value)/255;
-						float g = float.Parse(matches[0].Groups[2].Value)/255;
-						float b = float.Parse(matches[0].Groups[3].Value)/255;
-						float max = Mathf.Max(r,Mathf.Max(g,b));
-						if(max > 1f){
-							r /= max; g /= max; b /= max;
-						}
-						Color finalColor = new Color(r,g,b);
-						Node nodeObject = Instantiate(nodePrefab, new Vector3(x1,y1,0), Quaternion.identity) as Node;
-						nodeObject.transform.localScale = new Vector3(radius,radius,radius);
-						nodeObject.position = new Vector3(x1,y1,z1);
-						nodeObject.id = "Node: " + nodeid++;
+					links.Add(linkObject.id, linkObject);
 
-						nodeObject.GetComponent<Renderer>().material.color = finalColor;
-						nodes.Add(nodeObject.id, nodeObject);
-						
-						statusText.text = "Loading Topology: Node " + nodeObject.id;
-						nodeCount++;
-						nodeCountText.text = "Nodes: " + nodeCount;
-					}
-
-
-					//create links
-					if(xmlNode.Name == "line"){
-						string color = xmlNode.Attributes["stroke"].Value;
-						MatchCollection matches = Regex.Matches(color, colorrx, 
-						                                        RegexOptions.IgnorePatternWhitespace);
-						float r = float.Parse(matches[0].Groups[1].Value)/255;
-						float g = float.Parse(matches[0].Groups[2].Value)/255;
-						float b = float.Parse(matches[0].Groups[3].Value)/255;
-						float max = Mathf.Max(r,Mathf.Max(g,b));
-						if(max > 1f){
-							r /= max; g /= max; b /= max;
-						}
-
-
-						Color finalColor = new Color(r,g,b);
-
-						Link linkObject = Instantiate(linkPrefab, new Vector3(0,0,0), Quaternion.identity) as Link;
-
-						linkObject.id = "Line: " + lineid++;
-						Vector3 src = new Vector3(float.Parse(xmlNode.Attributes["x1"].Value),float.Parse(xmlNode.Attributes["y1"].Value),0);
-						Vector3 dest = new Vector3(float.Parse(xmlNode.Attributes["x2"].Value),float.Parse(xmlNode.Attributes["y2"].Value),0);
-						linkObject.width = float.Parse(xmlNode.Attributes["stroke-width"].Value);
-						linkObject.source = src;
-						linkObject.target = dest;
-						linkObject.color = finalColor;
-						linkObject.opacity = float.Parse(xmlNode.Attributes["opacity"].Value);
-						links.Add(linkObject.id, linkObject);
-
-						statusText.text = "Loading Topology: Edge " + linkObject.id;
-						linkCount++;
-						linkCountText.text = "Edges: " + linkCount;
-					}
+					statusText.text = "Loading Topology: Edge " + linkObject.id;
+					linkCountText.text = "Edges: " + linkCount;
+				}
 				
 //					//every 100 cycles return control to unity
-					if(j % 100 == 0)
+					if(j++ % 100 == 0)
 						yield return true;
 				}
-			}
+
 			statusText.text = "";
 		}
+
+		private Link parseLink(XmlReader xmlNode){
+			string color = "";
+			float x1 = 0, x2 = 0, y1 = 0, y2 = 0, stroke = 0, opacity = 0;
+			if (!xmlNode.MoveToFirstAttribute ())
+				return null;
+			do {
+				switch (xmlNode.Name) {
+				case "stroke":
+					color = xmlNode.Value;
+					break;
+				case "x1":
+					x1 = float.Parse (xmlNode.Value);
+					break;
+				case "x2":
+					x2 = float.Parse (xmlNode.Value);
+					break;
+				case "y1":
+					x1 = float.Parse (xmlNode.Value);
+					break;
+				case "y2":
+					x2 = float.Parse (xmlNode.Value);
+					break;
+				case "stroke-width":
+					stroke = float.Parse (xmlNode.Value);
+					break;
+				case "opacity":
+					opacity = float.Parse (xmlNode.Value);
+					break;
+				default:
+					break;
+				}
+			} while(xmlNode.MoveToNextAttribute());
+
+			MatchCollection matches = Regex.Matches(color, colorrx, 
+			                                        RegexOptions.IgnorePatternWhitespace);
+			float r = float.Parse(matches[0].Groups[1].Value)/255;
+			float g = float.Parse(matches[0].Groups[2].Value)/255;
+			float b = float.Parse(matches[0].Groups[3].Value)/255;
+			float max = Mathf.Max(r,Mathf.Max(g,b));
+			if(max > 1f){
+				r /= max; g /= max; b /= max;
+			}
+			Color finalColor = new Color(r,g,b);
+
+			Link linkObject = Instantiate(linkPrefab, new Vector3(0,0,0), Quaternion.identity) as Link;
+			
+			linkObject.id = "Line: " + linkCount++;
+			Vector3 src = new Vector3(x1,y1,0);
+			Vector3 dest = new Vector3(x2,y2,0);
+			linkObject.width = stroke;
+			linkObject.source = src;
+			linkObject.target = dest;
+			linkObject.color = finalColor;
+			linkObject.opacity = opacity;
+
+			return linkObject;
+		}
+
+		private Node parseNode(XmlReader xmlNode){
+			string color = "";
+			float x1 = 0, y1 = 0, z1 = 0, radius = 0;
+			if (!xmlNode.MoveToFirstAttribute ())
+				return null;
+			do {
+				switch (xmlNode.Name) {
+				case "fill":
+					color = xmlNode.Value;
+					break;
+				case "cx":
+					x1 = float.Parse (xmlNode.Value);
+					break;
+				case "cy":
+					y1 = float.Parse (xmlNode.Value);
+					break;
+				case "r":
+					radius = float.Parse (xmlNode.Value);
+					break;
+				default:
+					break;
+				}
+			} while(xmlNode.MoveToNextAttribute());
+	
+			MatchCollection matches = Regex.Matches (color, colorrx, 
+			                                        RegexOptions.IgnorePatternWhitespace);
+			float r = float.Parse (matches [0].Groups [1].Value) / 255;
+			float g = float.Parse (matches [0].Groups [2].Value) / 255;
+			float b = float.Parse (matches [0].Groups [3].Value) / 255;
+			float max = Mathf.Max (r, Mathf.Max (g, b));
+			if (max > 1f) {
+				r /= max;
+				g /= max;
+				b /= max;
+			}
+			Color finalColor = new Color (r, g, b);
+			Node nodeObject = Instantiate (nodePrefab, new Vector3 (x1, y1, 0), Quaternion.identity) as Node;
+			nodeObject.transform.localScale = new Vector3 (radius, radius, radius);
+			nodeObject.position = new Vector3 (x1, y1, z1);
+			nodeObject.id = "Node: " + nodeCount++;
+			
+			nodeObject.GetComponent<Renderer> ().material.color = finalColor;
+
+			return nodeObject;
+		}
+
 
 
 		void Start () {

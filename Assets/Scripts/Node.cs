@@ -31,6 +31,18 @@ namespace Topology {
 
 
 		void Update () {
+			bool cond = false;
+			if (Input.GetKey ("i")) {
+				radius += 0.01f;
+				cond = true;
+			} else if (Input.GetKey ("o")) {
+				radius -= 0.01f;
+				cond = true;
+
+			}
+			if (cond) {
+				this.gameObject.GetComponent<Renderer> ().transform.localScale = new Vector3 (radius, radius, radius);
+			}
 		}
 	}
 
