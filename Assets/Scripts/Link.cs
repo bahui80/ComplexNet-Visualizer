@@ -37,26 +37,15 @@ namespace Topology {
 		private LineRenderer lineRenderer;
 
 		void Start () {
-			lineRenderer = gameObject.AddComponent<LineRenderer>();
-			//color link according to status
-			Color c;
-			c = Color.gray;
-			c.a = 0.5f;
-			
-			//draw line
-			lineRenderer.material = new Material (Shader.Find("Self-Illumin/Diffuse"));
-			lineRenderer.material.SetColor ("_Color", c);
-			lineRenderer.SetWidth(0.01f, 0.01f);
-			lineRenderer.SetVertexCount(2);
-			lineRenderer.SetPosition(0, new Vector3(0,0,0));
-			lineRenderer.SetPosition(1, new Vector3(1,0,0));
 
 		}
 
-		void Update () {
-			color.a = opacity;
+		public void reload(){
+			lineRenderer = gameObject.AddComponent<LineRenderer>();
+			lineRenderer.material = new Material (Shader.Find("Self-Illumin/Diffuse"));
 			lineRenderer.material.SetColor ("_Color", color);
-			lineRenderer.SetWidth(width, width);
+			lineRenderer.SetWidth (width, width);
+			lineRenderer.SetVertexCount(2);
 			lineRenderer.SetPosition (0, source);
 			lineRenderer.SetPosition (1, target);
 			loaded = true;

@@ -112,10 +112,10 @@ namespace Topology {
 					x2 = float.Parse (xmlNode.Value);
 					break;
 				case "y1":
-					x1 = float.Parse (xmlNode.Value);
+					y1 = float.Parse (xmlNode.Value);
 					break;
 				case "y2":
-					x2 = float.Parse (xmlNode.Value);
+					y2 = float.Parse (xmlNode.Value);
 					break;
 				case "stroke-width":
 					stroke = float.Parse (xmlNode.Value);
@@ -142,13 +142,17 @@ namespace Topology {
 			Link linkObject = Instantiate(linkPrefab, new Vector3(0,0,0), Quaternion.identity) as Link;
 			
 			linkObject.id = "Line: " + linkCount++;
+
 			Vector3 src = new Vector3(x1,y1,0);
 			Vector3 dest = new Vector3(x2,y2,0);
 			linkObject.width = stroke;
 			linkObject.source = src;
 			linkObject.target = dest;
+			finalColor.a = opacity;
 			linkObject.color = finalColor;
 			linkObject.opacity = opacity;
+
+			linkObject.reload ();
 
 			return linkObject;
 		}
@@ -191,12 +195,36 @@ namespace Topology {
 			Color finalColor = new Color (r, g, b);
 			Node nodeObject = Instantiate (nodePrefab, new Vector3 (x1, y1, 0), Quaternion.identity) as Node;
 			nodeObject.transform.localScale = new Vector3 (radius, radius, radius);
+			nodeObject.radius = radius;
 			nodeObject.position = new Vector3 (x1, y1, z1);
 			nodeObject.id = "Node: " + nodeCount++;
 			
 			nodeObject.GetComponent<Renderer> ().material.color = finalColor;
 
 			return nodeObject;
+		}
+
+		
+		
+		void Update () {
+			if (Input.GetKey ("i")) {
+				foreach (Node node in nodes.Values) {
+					node.zoomOut ();
+				}
+			} else if (Input.GetKey ("o")) {
+				foreach (Node node in nodes.Values) {
+					node.zoomIn ();
+				}
+			} else if (Input.GetKeyUp ("h")) {
+				foreach (Node node in nodes.Values) {
+					node.hide ();
+				}
+
+			} else if (Input.GetKeyUp ("j")) {
+				foreach (Node node in nodes.Values) {
+					node.show ();
+				}
+			}
 		}
 
 

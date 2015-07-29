@@ -28,22 +28,32 @@ namespace Topology {
 		public string id;
 		public float radius;
 		public Vector3 position;
+		private Renderer renderer;
 
-
-		void Update () {
-			bool cond = false;
-			if (Input.GetKey ("i")) {
-				radius += 0.01f;
-				cond = true;
-			} else if (Input.GetKey ("o")) {
-				radius -= 0.01f;
-				cond = true;
-
-			}
-			if (cond) {
-				this.gameObject.GetComponent<Renderer> ().transform.localScale = new Vector3 (radius, radius, radius);
-			}
+		public void Start(){
+			renderer = this.gameObject.GetComponent<Renderer> ();
 		}
+
+		public void zoomOut()
+		{
+			radius += 0.005f;
+			renderer.transform.localScale = new Vector3 (radius, radius, radius);
+		}
+
+		public void zoomIn(){
+			radius -= 0.005f;
+			renderer.transform.localScale = new Vector3 (radius, radius, radius);
+		}
+
+		public void hide(){
+			renderer.enabled = false;
+		}
+
+		public void show(){
+			renderer.enabled = true;
+		}
+
+
 	}
 
 }
