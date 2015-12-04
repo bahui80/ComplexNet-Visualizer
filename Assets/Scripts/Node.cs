@@ -32,6 +32,7 @@ namespace Topology {
 
 		public void Start(){
 			renderer = this.gameObject.GetComponent<Renderer> ();
+			this.renderer.enabled = false;
 		}
 
 		public void zoomOut()

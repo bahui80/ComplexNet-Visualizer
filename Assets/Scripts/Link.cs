@@ -34,21 +34,24 @@ namespace Topology {
 		public float width;
 		public float opacity;
 
-		private LineRenderer lineRenderer;
-
-		void Start () {
-
-		}
+		public LineRenderer lineRenderer;
 
 		public void reload(){
-			lineRenderer = gameObject.AddComponent<LineRenderer>();
-			lineRenderer.material = new Material (Shader.Find("Self-Illumin/Diffuse"));
 			lineRenderer.material.SetColor ("_Color", color);
 			lineRenderer.SetWidth (width, width);
 			lineRenderer.SetVertexCount(2);
 			lineRenderer.SetPosition (0, source);
 			lineRenderer.SetPosition (1, target);
 			loaded = true;
+			lineRenderer.enabled = false;
+		}
+
+		public void hide(){
+			lineRenderer.enabled = false;
+		}
+		
+		public void show(){
+			lineRenderer.enabled = true;
 		}
 	}
 

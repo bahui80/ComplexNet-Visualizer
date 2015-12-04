@@ -219,10 +219,16 @@ namespace Topology {
 				foreach (Node node in nodes.Values) {
 					node.hide ();
 				}
+				foreach (Link link in links.Values) {
+					link.hide();
+				}
 
 			} else if (Input.GetKeyUp ("j")) {
 				foreach (Node node in nodes.Values) {
 					node.show ();
+				}
+				foreach (Link link in links.Values) {
+					link.show();
 				}
 			}
 		}
