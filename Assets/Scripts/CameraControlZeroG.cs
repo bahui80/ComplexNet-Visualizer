@@ -38,11 +38,11 @@ public class CameraControlZeroG : MonoBehaviour {
 		move.z = Input.GetAxis("Vertical") * speed * Time.deltaTime;
 
 		move.y = 0;
-		if (Input.GetKey ("space")) {
+		if (Input.GetKey ("w")) {
 			move.y = speed * Time.deltaTime;
 		}
 
-		if (Input.GetKey ("left ctrl")) {
+		if (Input.GetKey ("s")) {
 			move.y = -speed * Time.deltaTime;
 		}
 

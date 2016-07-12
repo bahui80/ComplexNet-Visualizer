@@ -137,7 +137,7 @@ namespace Topology {
 			if(max > 1f){
 				r /= max; g /= max; b /= max;
 			}
-			Color finalColor = new Color(r,g,b);
+			Color finalColor = new Color(r,g,b,opacity);
 
 			Link linkObject = Instantiate(linkPrefab, new Vector3(0,0,0), Quaternion.identity) as Link;
 			
@@ -145,7 +145,7 @@ namespace Topology {
 
 			Vector3 src = new Vector3(x1,y1,0);
 			Vector3 dest = new Vector3(x2,y2,0);
-			linkObject.width = stroke;
+			linkObject.width = stroke * 0.2f;
 			linkObject.source = src;
 			linkObject.target = dest;
 			finalColor.a = opacity;

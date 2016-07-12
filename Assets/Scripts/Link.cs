@@ -37,7 +37,8 @@ namespace Topology {
 		public LineRenderer lineRenderer;
 
 		public void reload(){
-			lineRenderer.material.SetColor ("_Color", color);
+			lineRenderer.material.color = color;
+			lineRenderer.SetColors(color, color);
 			lineRenderer.SetWidth (width, width);
 			lineRenderer.SetVertexCount(2);
 			lineRenderer.SetPosition (0, source);
