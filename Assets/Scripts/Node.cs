@@ -33,7 +33,15 @@ namespace Topology {
 		public void Start(){
 			renderer = this.gameObject.GetComponent<Renderer> ();
 			this.renderer.enabled = false;
+			setCollider ();
 		}
+
+		private void setCollider() {
+			CircleCollider2D collider = GetComponent<CircleCollider2D> ();
+			collider.offset = new Vector2 (position.x, position.y);
+			collider.radius = radius;
+		}
+
 
 		public void zoomOut()
 		{
@@ -54,7 +62,18 @@ namespace Topology {
 			renderer.enabled = true;
 		}
 
+		public void OnTriggerEnter2D(Collider2D other) {
+			if(FullyContains(other)) {
+				Destroy (other.gameObject);
+			}
+		} 
 
+		private bool FullyContains(Collider2D resident){
+			CircleCollider2D zone = GetComponent<CircleCollider2D>();
+			if(zone == null) {
+				return false;
+			}
+			return zone.bounds.Contains(resident.bounds.max) && zone.bounds.Contains(resident.bounds.min);
+		} 
 	}
-
 }
