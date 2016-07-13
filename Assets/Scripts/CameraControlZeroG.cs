@@ -35,15 +35,15 @@ public class CameraControlZeroG : MonoBehaviour {
 	
 	void Update () {
 		move.x = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
-		move.z = Input.GetAxis("Vertical") * speed * Time.deltaTime;
+		move.y = Input.GetAxis("Vertical") * speed * Time.deltaTime;
 
-		move.y = 0;
+		move.z = 0;
 		if (Input.GetKey ("w")) {
-			move.y = speed * Time.deltaTime;
+			move.z = speed * Time.deltaTime;
 		}
 
 		if (Input.GetKey ("s")) {
-			move.y = -speed * Time.deltaTime;
+			move.z = -speed * Time.deltaTime;
 		}
 
 		//adjust speed with mouse wheel

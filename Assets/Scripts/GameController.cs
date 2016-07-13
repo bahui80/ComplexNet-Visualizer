@@ -158,7 +158,7 @@ namespace Topology {
 		}
 
 		private Node parseNode(XmlReader xmlNode){
-			string color = "";
+			string color = "", name = "";
 			float x1 = 0, y1 = 0, z1 = 0, radius = 0;
 			if (!xmlNode.MoveToFirstAttribute ())
 				return null;
@@ -175,6 +175,9 @@ namespace Topology {
 					break;
 				case "r":
 					radius = float.Parse (xmlNode.Value);
+					break;
+				case "name":
+					name = xmlNode.Value;
 					break;
 				default:
 					break;
@@ -193,11 +196,14 @@ namespace Topology {
 				b /= max;
 			}
 			Color finalColor = new Color (r, g, b);
+
 			Node nodeObject = Instantiate (nodePrefab, new Vector3 (x1, y1, 0), Quaternion.identity) as Node;
+
 			nodeObject.transform.localScale = new Vector3 (radius, radius, radius);
 			nodeObject.radius = radius;
 			nodeObject.position = new Vector3 (x1, y1, z1);
 			nodeObject.id = "Node: " + nodeCount++;
+			nodeObject.name = name;
 			
 			nodeObject.GetComponent<Renderer> ().material.color = finalColor;
 

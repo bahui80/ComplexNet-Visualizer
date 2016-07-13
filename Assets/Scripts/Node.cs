@@ -27,29 +27,45 @@ namespace Topology {
 
 		public string id;
 		public float radius;
+		public string name;
 		public Vector3 position;
 		private Renderer renderer;
+		private MeshFilter filter;
+		private GUIStyle guiStyleFore;
+		private GUIStyle guiStyleBack;
+		private bool isClicked = false;
 
 		public void Start(){
-			renderer = this.gameObject.GetComponent<Renderer> ();
+			renderer = gameObject.GetComponent<Renderer> ();
 			this.renderer.enabled = false;
+			filter = gameObject.GetComponent<MeshFilter> ();
 			setCollider ();
+			setTextStyles ();
+		}
+
+		private void setTextStyles() {
+			guiStyleFore = new GUIStyle();
+			guiStyleFore.normal.textColor = Color.white;  
+			guiStyleFore.alignment = TextAnchor.UpperCenter ;
+			guiStyleFore.wordWrap = true;
+			guiStyleBack = new GUIStyle();
+			guiStyleBack.normal.textColor = Color.black;  
+			guiStyleBack.alignment = TextAnchor.UpperCenter ;
+			guiStyleBack.wordWrap = true;
 		}
 
 		private void setCollider() {
 			CircleCollider2D collider = GetComponent<CircleCollider2D> ();
-			collider.offset = new Vector2 (position.x, position.y);
-			collider.radius = radius;
+			collider.radius = filter.mesh.bounds.max.x;
 		}
 
 
-		public void zoomOut()
-		{
+		public void zoomOut() {
 			radius += 0.005f;
 			renderer.transform.localScale = new Vector3 (radius, radius, radius);
 		}
 
-		public void zoomIn(){
+		public void zoomIn() {
 			radius -= 0.005f;
 			renderer.transform.localScale = new Vector3 (radius, radius, radius);
 		}
@@ -74,6 +90,23 @@ namespace Topology {
 				return false;
 			}
 			return zone.bounds.Contains(resident.bounds.max) && zone.bounds.Contains(resident.bounds.min);
-		} 
+		}
+
+		void OnMouseDown() {
+			isClicked = true;
+		}
+
+		void OnMouseUp() {
+			isClicked = false;
+		}
+
+		void OnGUI() {
+			if (isClicked) {
+				var x = Event.current.mousePosition.x;
+				var y = Event.current.mousePosition.y;
+				GUI.Label (new Rect (x-149, y+40, 300, 60), "Name: " + name, guiStyleBack);
+				GUI.Label (new Rect (x-150, y+40, 300, 60), "Name: " + name, guiStyleFore);
+			}
+		}
 	}
 }
