@@ -33,26 +33,16 @@ namespace Topology {
 		private MeshFilter filter;
 		private GUIStyle guiStyleFore;
 		private GUIStyle guiStyleBack;
-		private bool isClicked = false;
+		private GameObject text;
+		public float ratio = 10;
 
-		public void Start(){
+		public void Start() {
 			renderer = gameObject.GetComponent<Renderer> ();
 			this.renderer.enabled = false;
 			filter = gameObject.GetComponent<MeshFilter> ();
 			setCollider ();
-			setTextStyles ();
 		}
 
-		private void setTextStyles() {
-			guiStyleFore = new GUIStyle();
-			guiStyleFore.normal.textColor = Color.white;  
-			guiStyleFore.alignment = TextAnchor.UpperCenter ;
-			guiStyleFore.wordWrap = true;
-			guiStyleBack = new GUIStyle();
-			guiStyleBack.normal.textColor = Color.black;  
-			guiStyleBack.alignment = TextAnchor.UpperCenter ;
-			guiStyleBack.wordWrap = true;
-		}
 
 		private void setCollider() {
 			CircleCollider2D collider = GetComponent<CircleCollider2D> ();
@@ -93,19 +83,15 @@ namespace Topology {
 		}
 
 		void OnMouseDown() {
-			isClicked = true;
-		}
-
-		void OnMouseUp() {
-			isClicked = false;
-		}
-
-		void OnGUI() {
-			if (isClicked) {
-				var x = Event.current.mousePosition.x;
-				var y = Event.current.mousePosition.y;
-				GUI.Label (new Rect (x-149, y+40, 300, 60), "Name: " + name, guiStyleBack);
-				GUI.Label (new Rect (x-150, y+40, 300, 60), "Name: " + name, guiStyleFore);
+			if (text == null) {
+				text = (GameObject) Instantiate (Resources.Load("Text"), new Vector3(transform.position.x, transform.position.y - 0.09f, 0), Quaternion.identity);
+				text.transform.localScale = new Vector3 (0.01f, 0.01f, 0.01f);
+				text.GetComponent<TextMesh>().text = "Name: " + name;
+				float finalSize = (float) Screen.width/ratio;
+				text.GetComponent<TextMesh>().fontSize = (int) finalSize;
+			} else {
+				Destroy (text);
+				text = null;
 			}
 		}
 	}

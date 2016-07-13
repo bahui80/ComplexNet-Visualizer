@@ -53,6 +53,7 @@
      <None Include="Assets\Data\layout 2.xml" />
      <None Include="Assets\Data\layout2.xml" />
      <None Include="Assets\Materials\AlphaSelfIllum.shader" />
+     <None Include="Assets\Data\unNodo.xml" />
      <None Include="Assets\Data\layout.xml" />
      <None Include="Assets\Data\layout1.xml" />
  <Reference Include="UnityEngine.UI">
