@@ -23,6 +23,9 @@ using System.Collections;
 using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
+using UnityEditor;
+using System;
+using UnityEngine.SceneManagement;
 
 namespace Topology {
 
@@ -38,13 +41,14 @@ namespace Topology {
 		private int linkCount = 0;
 		private GUIText nodeCountText;
 		private GUIText linkCountText;
+		private bool layoutLoaded = false;
 
 		private string colorrx = "([0-9]+),([0-9]+),([0-9]+)" ;
 
 		//Method for loading the GraphML layout file
-		private IEnumerator LoadLayout(){
+		private IEnumerator LoadLayout(string sourceFile) {
 
-			string sourceFile = Application.dataPath + "/Data/layout.xml";
+			//string sourceFile = Application.dataPath + "/Data/layout.xml";
 			statusText.text = "Loading file: " + sourceFile;
 
 			//determine which platform to load for
@@ -68,31 +72,27 @@ namespace Topology {
 			statusText.text = "Loading Topology";
 			int j = 0;
 
-			while(xmlReader.Read()){
-				if(xmlReader.Name == "circle"){
+			while(xmlReader.Read()) {
+				if (xmlReader.Name == "circle") {
 
-					Node nodeObject = parseNode(xmlReader);
-
-					nodes.Add(nodeObject.id, nodeObject);
-					
+					Node nodeObject = parseNode (xmlReader);
+					nodes.Add (nodeObject.id, nodeObject);
 					statusText.text = "Loading Topology: Node " + nodeObject.id;
 					nodeCountText.text = "Nodes: " + nodeCount;
-				}else if(xmlReader.Name == "line"){
-
-					Link linkObject = parseLink(xmlReader);
-
-					links.Add(linkObject.id, linkObject);
-
+				} else if (xmlReader.Name == "line") {
+					Link linkObject = parseLink (xmlReader);
+					links.Add (linkObject.id, linkObject);
 					statusText.text = "Loading Topology: Edge " + linkObject.id;
 					linkCountText.text = "Edges: " + linkCount;
-				}
-				
-//					//every 100 cycles return control to unity
-					if(j++ % 100 == 0)
-						yield return true;
-				}
+				} 
 
+				//every 100 cycles return control to unity
+				if (j++ % 100 == 0) {
+					yield return true;
+				}
+			}
 			statusText.text = "";
+			layoutLoaded = true;
 		}
 
 		private Link parseLink(XmlReader xmlNode){
@@ -226,7 +226,7 @@ namespace Topology {
 					node.hide ();
 				}
 				foreach (Link link in links.Values) {
-					link.hide();
+					link.hide ();
 				}
 
 			} else if (Input.GetKeyUp ("j")) {
@@ -234,7 +234,19 @@ namespace Topology {
 					node.show ();
 				}
 				foreach (Link link in links.Values) {
-					link.show();
+					link.show ();
+				}
+			} else if (Input.GetKeyUp ("n")) {
+				if (layoutLoaded) {
+					bool answer = EditorUtility.DisplayDialog ("Start over?", "If you press OK you will be able to load another graph and start over", "Ok", "Cancel");
+					if (answer) {
+						SceneManager.LoadScene ("Topology");
+					}
+				} else {
+					string path = EditorUtility.OpenFilePanel ("Choose graph to load", "", "xml");
+					if (path != "" && System.IO.File.Exists (path)) {
+						StartCoroutine (LoadLayout (path));
+					}
 				}
 			}
 		}
@@ -250,10 +262,7 @@ namespace Topology {
 			linkCountText = GameObject.Find("LinkCount").GetComponent<GUIText>();
 			linkCountText.text = "Edges: 0";
 			statusText = GameObject.Find("StatusText").GetComponent<GUIText>();
-			statusText.text = "";
-
-
-			StartCoroutine( LoadLayout() );
+			statusText.text = "Press N to load a graph";
 		}
 
 	}

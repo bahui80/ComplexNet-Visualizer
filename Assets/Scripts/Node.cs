@@ -60,12 +60,16 @@ namespace Topology {
 			renderer.transform.localScale = new Vector3 (radius, radius, radius);
 		}
 
-		public void hide(){
-			renderer.enabled = false;
+		public void hide() {
+			if (renderer != null) {
+				renderer.enabled = false;
+			}
 		}
 
-		public void show(){
-			renderer.enabled = true;
+		public void show() {
+			if (renderer != null) {
+				renderer.enabled = true;
+			}
 		}
 
 		public void OnTriggerEnter2D(Collider2D other) {
