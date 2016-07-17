@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CameraControlZeroG.cs" />
+     <Compile Include="Assets\Scripts\CameraPositionSave.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\Link.cs" />
      <Compile Include="Assets\Scripts\MouseLook.cs" />

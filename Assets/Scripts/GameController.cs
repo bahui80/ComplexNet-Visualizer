@@ -26,6 +26,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using System;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 namespace Topology {
 
@@ -42,6 +43,10 @@ namespace Topology {
 		private GUIText nodeCountText;
 		private GUIText linkCountText;
 		private bool layoutLoaded = false;
+		private List<CameraPositionSave> savedPositions;
+		private bool textsHidden = false;
+		private bool graphHidden = true;
+
 
 		private string colorrx = "([0-9]+),([0-9]+),([0-9]+)" ;
 
@@ -221,20 +226,23 @@ namespace Topology {
 				foreach (Node node in nodes.Values) {
 					node.zoomIn ();
 				}
-			} else if (Input.GetKeyUp ("h")) {
-				foreach (Node node in nodes.Values) {
-					node.hide ();
-				}
-				foreach (Link link in links.Values) {
-					link.hide ();
-				}
-
 			} else if (Input.GetKeyUp ("j")) {
-				foreach (Node node in nodes.Values) {
-					node.show ();
-				}
-				foreach (Link link in links.Values) {
-					link.show ();
+				if (graphHidden) {
+					foreach (Node node in nodes.Values) {
+						node.show ();
+					}
+					foreach (Link link in links.Values) {
+						link.show ();
+					}
+					graphHidden = false;
+				} else {
+					foreach (Node node in nodes.Values) {
+						node.hide ();
+					}
+					foreach (Link link in links.Values) {
+						link.hide ();
+					}
+					graphHidden = true;
 				}
 			} else if (Input.GetKeyUp ("n")) {
 				if (layoutLoaded) {
@@ -248,14 +256,58 @@ namespace Topology {
 						StartCoroutine (LoadLayout (path));
 					}
 				}
+			} else if (Input.GetKeyUp ("space")) {
+				CameraPositionSave savedPosition = new CameraPositionSave (Camera.main.transform.position, Camera.main.transform.rotation.eulerAngles, Camera.main.transform.localScale);
+				savedPositions.Add (savedPosition);			
+			} else if (Input.GetKeyUp ("h")) {
+				if (!textsHidden) {
+					GameObject.Find ("Instructions").GetComponent<GUIText> ().enabled = false;
+					GameObject.Find ("LinkCount").GetComponent<GUIText> ().enabled = false;
+					GameObject.Find ("MovementSpeed").GetComponent<GUIText> ().enabled = false;
+					GameObject.Find ("NodeCount").GetComponent<GUIText> ().enabled = false;
+					GameObject.Find ("StatusText").GetComponent<GUIText> ().enabled = false;
+					GameObject.Find ("WarpKeys").GetComponent<GUIText> ().enabled = false;
+					textsHidden = true;
+				} else {
+					GameObject.Find ("Instructions").GetComponent<GUIText> ().enabled = true;
+					GameObject.Find ("LinkCount").GetComponent<GUIText> ().enabled = true;
+					GameObject.Find ("MovementSpeed").GetComponent<GUIText> ().enabled = true;
+					GameObject.Find ("NodeCount").GetComponent<GUIText> ().enabled = true;
+					GameObject.Find ("StatusText").GetComponent<GUIText> ().enabled = true;
+					GameObject.Find ("WarpKeys").GetComponent<GUIText> ().enabled = true;
+					textsHidden = false;
+				}
+			} else if (Input.GetKeyUp ("1")) {
+				setCameraFromSavePosition (1);
+			} else if (Input.GetKeyUp ("2")) {
+				setCameraFromSavePosition (2);
+			} else if (Input.GetKeyUp ("3")) {
+				setCameraFromSavePosition (3);
+			} else if (Input.GetKeyUp ("4")) {
+				setCameraFromSavePosition (4);
+			} else if (Input.GetKeyUp ("5")) {
+				setCameraFromSavePosition (5);
+			} else if (Input.GetKeyUp ("6")) {
+				setCameraFromSavePosition (6);
+			} else if (Input.GetKeyUp ("7")) {
+				setCameraFromSavePosition (7);
+			} else if (Input.GetKeyUp ("8")) {
+				setCameraFromSavePosition (8);
+			} else if (Input.GetKeyUp ("9")) {
+				setCameraFromSavePosition (9);
 			}
 		}
 
-
-
+		private void setCameraFromSavePosition(int index) {
+			Camera.main.transform.position = savedPositions [index].getPosition ();
+			//Camera.main.transform.rotation.eulerAngles = savedPositions[index].getScale();
+			Camera.main.transform.localScale = savedPositions [index].getScale ();
+		}
+			
 		void Start () {
 			nodes = new Hashtable();
 			links = new Hashtable();
+			savedPositions = new List<CameraPositionSave> ();
 
 			nodeCountText = GameObject.Find("NodeCount").GetComponent<GUIText>();
 			nodeCountText.text = "Nodes: 0";
@@ -264,7 +316,5 @@ namespace Topology {
 			statusText = GameObject.Find("StatusText").GetComponent<GUIText>();
 			statusText.text = "Press N to load a graph";
 		}
-
 	}
-
 }
