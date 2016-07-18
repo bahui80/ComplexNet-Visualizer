@@ -23,7 +23,6 @@ using System.Collections;
 using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
-using UnityEditor;
 using System;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
@@ -34,7 +33,6 @@ namespace Topology {
 
 		public Node nodePrefab;
 		public Link linkPrefab;
-
 		private Hashtable nodes;
 		private Hashtable links;
 		private GUIText statusText;
@@ -45,10 +43,30 @@ namespace Topology {
 		private bool layoutLoaded = false;
 		private List<CameraPositionSave> savedPositions;
 		private bool textsHidden = false;
-		private bool graphHidden = true;
+		private bool nodesHidden = true;
+		private bool linksHidden = true;
+		// 200x300 px window will apear in the center of the screen.
+		private Rect windowRect = new Rect ((Screen.width - 500)/2, (Screen.height - 100)/2, 500, 100);
+		// Only show it if needed.
+		private bool showDialogBox = false;
+		private string colorrx = "([0-9]+),([0-9]+),([0-9]+)";
+		protected FileBrowser fileBrowser;
+		[SerializeField]
+		protected Texture2D	directoryImage, fileImage;
+		public GUISkin skin;
+	
+		void Start () {
+			nodes = new Hashtable();
+			links = new Hashtable();
+			savedPositions = new List<CameraPositionSave> ();
 
-
-		private string colorrx = "([0-9]+),([0-9]+),([0-9]+)" ;
+			nodeCountText = GameObject.Find("NodeCount").GetComponent<GUIText>();
+			nodeCountText.text = "Nodes: 0";
+			linkCountText = GameObject.Find("LinkCount").GetComponent<GUIText>();
+			linkCountText.text = "Edges: 0";
+			statusText = GameObject.Find("StatusText").GetComponent<GUIText>();
+			statusText.text = "Press N to load a graph";
+		}
 
 		//Method for loading the GraphML layout file
 		private IEnumerator LoadLayout(string sourceFile) {
@@ -98,6 +116,14 @@ namespace Topology {
 			}
 			statusText.text = "";
 			layoutLoaded = true;
+			foreach (Node node in nodes.Values) {
+				node.show ();
+			}
+			foreach (Link link in links.Values) {
+				link.show ();
+			}
+			nodesHidden = false;
+			linksHidden = false;
 		}
 
 		private Link parseLink(XmlReader xmlNode){
@@ -227,34 +253,37 @@ namespace Topology {
 					node.zoomIn ();
 				}
 			} else if (Input.GetKeyUp ("j")) {
-				if (graphHidden) {
+				if (nodesHidden) {
 					foreach (Node node in nodes.Values) {
 						node.show ();
 					}
-					foreach (Link link in links.Values) {
-						link.show ();
-					}
-					graphHidden = false;
+					nodesHidden = false;
 				} else {
 					foreach (Node node in nodes.Values) {
 						node.hide ();
 					}
+					nodesHidden = true;
+				}
+			} else if (Input.GetKeyUp ("k")) {
+				if (linksHidden) {
+					foreach (Link link in links.Values) {
+						link.show ();
+					}
+					linksHidden = false;
+				} else {
 					foreach (Link link in links.Values) {
 						link.hide ();
 					}
-					graphHidden = true;
+					linksHidden = true;
 				}
 			} else if (Input.GetKeyUp ("n")) {
 				if (layoutLoaded) {
-					bool answer = EditorUtility.DisplayDialog ("Start over?", "If you press OK you will be able to load another graph and start over", "Ok", "Cancel");
-					if (answer) {
-						SceneManager.LoadScene ("Topology");
-					}
+					showDialogBox = true;
 				} else {
-					string path = EditorUtility.OpenFilePanel ("Choose graph to load", "", "xml");
-					if (path != "" && System.IO.File.Exists (path)) {
-						StartCoroutine (LoadLayout (path));
-					}
+					fileBrowser = new FileBrowser(new Rect((Screen.width - 600)/2, (Screen.height - 500)/2, 600, 500), "Choose graph to load", FileSelectedCallback);
+					fileBrowser.SelectionPattern = "*.xml";
+					fileBrowser.DirectoryImage = directoryImage;
+					fileBrowser.FileImage = fileImage;
 				}
 			} else if (Input.GetKeyUp ("space")) {
 				CameraPositionSave savedPosition = new CameraPositionSave (Camera.main.transform.position, Camera.main.transform.rotation.eulerAngles, Camera.main.transform.localScale);
@@ -298,23 +327,42 @@ namespace Topology {
 			}
 		}
 
+		protected void FileSelectedCallback(string path) {
+			fileBrowser = null;
+			if (path != "" && System.IO.File.Exists (path)) {
+				StartCoroutine (LoadLayout (path));
+			}
+		}
+
 		private void setCameraFromSavePosition(int index) {
 			Camera.main.transform.position = savedPositions [index].getPosition ();
 			//Camera.main.transform.rotation.eulerAngles = savedPositions[index].getScale();
 			Camera.main.transform.localScale = savedPositions [index].getScale ();
 		}
-			
-		void Start () {
-			nodes = new Hashtable();
-			links = new Hashtable();
-			savedPositions = new List<CameraPositionSave> ();
 
-			nodeCountText = GameObject.Find("NodeCount").GetComponent<GUIText>();
-			nodeCountText.text = "Nodes: 0";
-			linkCountText = GameObject.Find("LinkCount").GetComponent<GUIText>();
-			linkCountText.text = "Edges: 0";
-			statusText = GameObject.Find("StatusText").GetComponent<GUIText>();
-			statusText.text = "Press N to load a graph";
+		void OnGUI ()  {
+			GUI.skin = skin;
+			if (showDialogBox) {
+				windowRect = GUI.Window (0, windowRect, DialogWindow, "Start over?");
+			} 
+			if (fileBrowser != null) {
+				fileBrowser.OnGUI ();
+			}
+		}
+
+		// This is the actual window.
+		void DialogWindow (int windowID) {
+			float y = 10;
+			GUI.Label(new Rect(50, y + 10, windowRect.width, 20), "If you press OK you will be able to load another graph and start over");
+
+			if(GUI.Button(new Rect(5,y + 50, (windowRect.width / 2) - 10, 20), "Ok")) {
+				SceneManager.LoadScene ("Topology");
+				showDialogBox = false;
+			}
+
+			if(GUI.Button(new Rect(windowRect.width / 2,y + 50, (windowRect.width / 2) - 10, 20), "Cancel")) {
+				showDialogBox = false;
+			}
 		}
 	}
 }
