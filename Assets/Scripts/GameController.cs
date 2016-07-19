@@ -307,23 +307,23 @@ namespace Topology {
 					textsHidden = false;
 				}
 			} else if (Input.GetKeyUp ("1")) {
-				setCameraFromSavePosition (1);
+				setCameraFromSavePosition (0);
 			} else if (Input.GetKeyUp ("2")) {
-				setCameraFromSavePosition (2);
+				setCameraFromSavePosition (1);
 			} else if (Input.GetKeyUp ("3")) {
-				setCameraFromSavePosition (3);
+				setCameraFromSavePosition (2);
 			} else if (Input.GetKeyUp ("4")) {
-				setCameraFromSavePosition (4);
+				setCameraFromSavePosition (3);
 			} else if (Input.GetKeyUp ("5")) {
-				setCameraFromSavePosition (5);
+				setCameraFromSavePosition (4);
 			} else if (Input.GetKeyUp ("6")) {
-				setCameraFromSavePosition (6);
+				setCameraFromSavePosition (5);
 			} else if (Input.GetKeyUp ("7")) {
-				setCameraFromSavePosition (7);
+				setCameraFromSavePosition (6);
 			} else if (Input.GetKeyUp ("8")) {
-				setCameraFromSavePosition (8);
+				setCameraFromSavePosition (7);
 			} else if (Input.GetKeyUp ("9")) {
-				setCameraFromSavePosition (9);
+				setCameraFromSavePosition (8);
 			}
 		}
 
@@ -335,9 +335,11 @@ namespace Topology {
 		}
 
 		private void setCameraFromSavePosition(int index) {
-			Camera.main.transform.position = savedPositions [index].getPosition ();
-			//Camera.main.transform.rotation.eulerAngles = savedPositions[index].getScale();
-			Camera.main.transform.localScale = savedPositions [index].getScale ();
+			if (savedPositions.Count - 1 >=  index) {
+				Camera.main.transform.position = savedPositions [index].getPosition ();
+				//Camera.main.transform.rotation.eulerAngles = savedPositions[index].getScale();
+				Camera.main.transform.localScale = savedPositions [index].getScale ();
+			}
 		}
 
 		void OnGUI ()  {
