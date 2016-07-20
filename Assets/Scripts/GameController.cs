@@ -87,8 +87,11 @@ namespace Topology {
 //				sr.Close();
 //			}
 
-			XmlReader xmlReader = XmlReader.Create (new StreamReader (sourceFile));
-//
+			XmlReaderSettings xmlSettings = new XmlReaderSettings();
+			xmlSettings.ProhibitDtd = false;
+			XmlReader xmlReader = XmlReader.Create (new StreamReader (sourceFile), xmlSettings);
+							
+//			
 //			XmlDocument xmlDoc = new XmlDocument();
 //			xmlDoc.LoadXml(xml);
 
@@ -281,7 +284,7 @@ namespace Topology {
 					showDialogBox = true;
 				} else {
 					fileBrowser = new FileBrowser(new Rect((Screen.width - 600)/2, (Screen.height - 500)/2, 600, 500), "Choose graph to load", FileSelectedCallback);
-					fileBrowser.SelectionPattern = "*.xml";
+					fileBrowser.SelectionPattern = "*.svg";
 					fileBrowser.DirectoryImage = directoryImage;
 					fileBrowser.FileImage = fileImage;
 				}
