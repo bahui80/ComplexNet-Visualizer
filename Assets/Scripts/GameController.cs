@@ -246,19 +246,19 @@ namespace Topology {
 		
 		
 		void Update () {
-			if (Input.GetKeyUp ("e")) {
-				foreach (Node node in nodes.Values) {
-					node.zoomIn ();
-				}
-			} else if (Input.GetKeyUp ("d")) {
+			if (Input.GetKey ("e")) {
 				foreach (Node node in nodes.Values) {
 					node.zoomOut ();
 				}
-			} else if(Input.GetKeyUp("a")) {
+			} else if (Input.GetKey ("d")) {
+				foreach (Node node in nodes.Values) {
+					node.zoomIn ();
+				}
+			} else if(Input.GetKey("a")) {
 				foreach (Link link in links.Values) {
 					link.reduceOpacity ();
 				}
-			} else if(Input.GetKeyUp("z")) {
+			} else if(Input.GetKey("z")) {
 				foreach (Link link in links.Values) {
 					link.incrementOpacity ();
 				}

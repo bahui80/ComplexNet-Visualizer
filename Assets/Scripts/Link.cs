@@ -56,8 +56,8 @@ namespace Topology {
 		}
 
 		public void reduceOpacity() {
-			if (opacity > 0.1f) {
-				opacity = opacity - 0.1f;
+			if (opacity > 0.01f) {
+				opacity = opacity - 0.01f;
 				Color color = lineRenderer.material.color;
 				color.a = opacity;
 				lineRenderer.material.color = color;
@@ -65,7 +65,7 @@ namespace Topology {
 		}
 
 		public void incrementOpacity() {
-			opacity = opacity + 0.1f;
+			opacity = opacity + 0.01f;
 			Color color = lineRenderer.material.color;
 			color.a = opacity;
 			lineRenderer.material.color = color;

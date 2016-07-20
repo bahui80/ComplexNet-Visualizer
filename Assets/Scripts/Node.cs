@@ -51,13 +51,17 @@ namespace Topology {
 
 
 		public void zoomOut() {
-			radius += 0.005f;
-			renderer.transform.localScale = new Vector3 (radius, radius, radius);
+			if (renderer != null) {
+				radius = radius * 1.05f;
+				renderer.transform.localScale = new Vector3 (radius, radius, radius);
+			}
 		}
 
 		public void zoomIn() {
-			radius -= 0.005f;
-			renderer.transform.localScale = new Vector3 (radius, radius, radius);
+			if (renderer != null) {
+				radius = radius * 0.95f;
+				renderer.transform.localScale = new Vector3 (radius, radius, radius);
+			}
 		}
 
 		public void hide() {
