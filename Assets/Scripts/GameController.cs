@@ -65,7 +65,7 @@ namespace Topology {
 			linkCountText = GameObject.Find("LinkCount").GetComponent<GUIText>();
 			linkCountText.text = "Edges: 0";
 			statusText = GameObject.Find("StatusText").GetComponent<GUIText>();
-			statusText.text = "Press N to load a graph";
+			statusText.text = "Press F to load a graph";
 		}
 
 		//Method for loading the GraphML layout file
@@ -162,8 +162,7 @@ namespace Topology {
 				}
 			} while(xmlNode.MoveToNextAttribute());
 
-			MatchCollection matches = Regex.Matches(color, colorrx, 
-			                                        RegexOptions.IgnorePatternWhitespace);
+			MatchCollection matches = Regex.Matches(color, colorrx, RegexOptions.IgnorePatternWhitespace);
 			float r = float.Parse(matches[0].Groups[1].Value)/255;
 			float g = float.Parse(matches[0].Groups[2].Value)/255;
 			float b = float.Parse(matches[0].Groups[3].Value)/255;
@@ -247,15 +246,23 @@ namespace Topology {
 		
 		
 		void Update () {
-			if (Input.GetKey ("i")) {
-				foreach (Node node in nodes.Values) {
-					node.zoomOut ();
-				}
-			} else if (Input.GetKey ("o")) {
+			if (Input.GetKeyUp ("e")) {
 				foreach (Node node in nodes.Values) {
 					node.zoomIn ();
 				}
-			} else if (Input.GetKeyUp ("j")) {
+			} else if (Input.GetKeyUp ("d")) {
+				foreach (Node node in nodes.Values) {
+					node.zoomOut ();
+				}
+			} else if(Input.GetKeyUp("a")) {
+				foreach (Link link in links.Values) {
+					link.reduceOpacity ();
+				}
+			} else if(Input.GetKeyUp("z")) {
+				foreach (Link link in links.Values) {
+					link.incrementOpacity ();
+				}
+			} else if (Input.GetKeyUp ("n")) {
 				if (nodesHidden) {
 					foreach (Node node in nodes.Values) {
 						node.show ();
@@ -267,7 +274,7 @@ namespace Topology {
 					}
 					nodesHidden = true;
 				}
-			} else if (Input.GetKeyUp ("k")) {
+			} else if (Input.GetKeyUp ("l")) {
 				if (linksHidden) {
 					foreach (Link link in links.Values) {
 						link.show ();
@@ -279,7 +286,7 @@ namespace Topology {
 					}
 					linksHidden = true;
 				}
-			} else if (Input.GetKeyUp ("n")) {
+			} else if (Input.GetKeyUp ("f")) {
 				if (layoutLoaded) {
 					showDialogBox = true;
 				} else {

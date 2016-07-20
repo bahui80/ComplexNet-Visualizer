@@ -54,6 +54,22 @@ namespace Topology {
 		public void show(){
 			lineRenderer.enabled = true;
 		}
+
+		public void reduceOpacity() {
+			if (opacity > 0.1f) {
+				opacity = opacity - 0.1f;
+				Color color = lineRenderer.material.color;
+				color.a = opacity;
+				lineRenderer.material.color = color;
+			}
+		}
+
+		public void incrementOpacity() {
+			opacity = opacity + 0.1f;
+			Color color = lineRenderer.material.color;
+			color.a = opacity;
+			lineRenderer.material.color = color;
+		}
 	}
 
 }
